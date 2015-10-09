@@ -10,6 +10,18 @@ import sys
 
 from osgeo import ogr
 
+def gdal_warp(inImage, outResolution, method):
+    
+    ext = os.path.splitext(inImage)[1]    
+    
+    # near (default), bilinear, cubic, cubicspline, lanczos, average, mode.
+    cmd = "gdalwarp -tr "+ str(outResolution) + " " + str(outResolution) + " -r " + method + " " + inImage + " " + os.path.splitext(inImage)[0] + method + str(outResolution) + ext 
+
+    subprocess.call(cmd, shell = True)
+    
+    return (os.path.splitext(inImage)[0] + method + str(outResolution) + ext)
+    
+
 
 def gdal_translate(inImage, outFormat):
     

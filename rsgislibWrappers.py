@@ -74,3 +74,4 @@ def creating_stacks(layersList, bandNamesList, outName):
     gdalformat = 'KEA'
     dataType = rsgislib.TYPE_32FLOAT
     imageutils.stackImageBands(layersList, None, outName, None, 0, gdalformat, dataType)                                         
+    return(outName)
