@@ -10,12 +10,23 @@ import sys
 
 from osgeo import ogr
 
+def vectorClip(inVector, coverVector, outVector):
+    try:
+        cmd = "ogr2ogr -clipsrc " + coverVector + " " + outVector + " " + inVector
+        subprocess.call(cmd, shell = True)
+    except OSError as e:
+        print >>sys.stderr, ("Execution failed:", e)
+        sys.exit 
+    
+    
+    
+
 def gdal_warp(inImage, outResolution, method):
     
     ext = os.path.splitext(inImage)[1]    
     
     # near (default), bilinear, cubic, cubicspline, lanczos, average, mode.
-    cmd = "gdalwarp -tr "+ str(outResolution) + " " + str(outResolution) + " -r " + method + " " + inImage + " " + os.path.splitext(inImage)[0] + method + str(outResolution) + ext 
+    cmd = "gdalwarp -tr "+ str(outResolution) + " " + str(outResolution) + " -r " + method + " -of KEA " + inImage + " " + os.path.splitext(inImage)[0] + "_" + method + str(outResolution) + ext 
 
     subprocess.call(cmd, shell = True)
     

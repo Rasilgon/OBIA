@@ -11,6 +11,7 @@ from rsgislib import segmentation
 from rsgislib.segmentation import segutils
 import os
 import subprocess
+from rsgislib.rastergis import ratutils
 
 def assingGKprojection (inImage):
     wktString = '''PROJCS["DHDN / Gauss-Kruger zone 4",
@@ -68,10 +69,16 @@ def ShepherdSegTest(inImage, numClusters, minPxls,tmpath, band = [1]):
     # polygonize
     cmd = "gdal_polygonize.py " + outImage + """ -f "ESRI Shapefile" """ + os.path.splitext(outImage)[0] + ".shp"
     subprocess.call(cmd, shell = True)
+    # scores
+    ratutils.populateImageStats(inImage, outputClumps, calcMean=True, calcStDev=True,
+                                calcArea=True, calcLength=True, calcWidth=True,
+                                outascii = os.path.splitext(outputClumps)[0] + "_stats.csv")
+
+
                                          
 def creating_stacks(layersList, bandNamesList, outName):
     #set format of data: assuming kea
     gdalformat = 'KEA'
     dataType = rsgislib.TYPE_32FLOAT
-    imageutils.stackImageBands(layersList, None, outName, None, 0, gdalformat, dataType)                                         
+    imageutils.stackImageBands(layersList, bandNamesList, outName, None, 0, gdalformat, dataType)                                         
     return(outName)
