@@ -120,14 +120,12 @@ def enhancedConfusionMatrix(actuals, predictions):
         classesPrecision[i] = classPrecision
         classesAccuracy[i] =classAccuracy
     ####
-    sensitivity = (float(np.sum(truePositives)) /
+    accuracy = (float(np.sum(truePositives)) /
                     (np.sum(truePositives)+ np.sum(falseNegatives)))*100
     precision  = (float(np.sum(truePositives)) /
                     (np.sum(truePositives)+ np.sum(falsePositives)))*100
-    PPV = (float(np.sum(truePositives)) / 
-                    (np.sum(truePositives)+ np.sum(falsePositives)))*100
     #####
-    return (cm, sensitivity,  precision,  classesPrecision, classesAccuracy, PPV)
+    return (cm, accuracy,  precision,  classesPrecision, classesAccuracy)
 
 #Accuracy (also known as producer's accuracy): 
 #it is the fraction of correctly classified pixels with regard to all pixels of that ground truth class. 
