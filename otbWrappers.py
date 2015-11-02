@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-#
 #!/usr/bin/python
-# Filename: otbWrappers.py
+
 
 import subprocess
 

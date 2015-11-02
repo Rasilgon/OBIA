@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Oct  8 14:48:34 2015
 
-@author: trashtos
-"""
+##### Import modules #######
+import fiona
+from shapely.geometry import shape
+from rasterstats import zonal_stats
+import pandas as pd
+import numpy as np
+from sklearn.metrics import confusion_matrix
 
-# own functions
+
+#### Functions #############
+
 
 def cleanTiles():
     tiles = [(7,18), (7,19), (8,21),(8,29), (10,14), (10,20), (10,24),(11,19),
@@ -86,7 +91,7 @@ def segQuality(inVector, inImage):
     return( intraVarWeighted, interVarWeighted, normVariance, numberSegments )
     
 
-def get_enhanced_confusion_matrix(actuals, predictions):
+def enhancedConfusionMatrix(actuals, predictions):
     """"enhances confusion_matrix by adding sensivity and specificity metrcs"""
     cm = confusion_matrix(actuals, predictions)
     #get total values
@@ -122,7 +127,7 @@ def get_enhanced_confusion_matrix(actuals, predictions):
     PPV = (float(np.sum(truePositives)) / 
                     (np.sum(truePositives)+ np.sum(falsePositives)))*100
     #####
-    return cm, sensitivity,  precision,  classesPrecision, classesAccuracy, PPV
+    return (cm, sensitivity,  precision,  classesPrecision, classesAccuracy, PPV)
 
 #Accuracy (also known as producer's accuracy): 
 #it is the fraction of correctly classified pixels with regard to all pixels of that ground truth class. 

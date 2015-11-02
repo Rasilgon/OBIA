@@ -1,27 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Oct  1 09:27:11 2015
 
-@author: trashtos
-"""
 import rsgislib
 from rsgislib import imageutils
 from rsgislib import rastergis
-from rsgislib import segmentation
 from rsgislib.segmentation import segutils
 import os
 import subprocess
 from rsgislib.rastergis import ratutils
 import os.path
-import rsgislib
-from rsgislib import rastergis
-from rsgislib.rastergis import ratutils
-from rios import rat
-from rsgislib import imageutils
-import pandas as pd
-import numpy as np
-import multiprocessing
-import gdal
+
 
 def assingGKprojection (inImage):
     wktString = '''PROJCS["DHDN / Gauss-Kruger zone 4",

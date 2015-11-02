@@ -1,14 +1,15 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Oct  1 08:23:19 2015
+# -*- coding: utf-8 -*-#
 
-@author: trashtos
-"""
+
+
+## Import Modules
 import subprocess
 import os
 import sys
-
 from osgeo import ogr
+
+
+## Functions ###
 
 def vectorClip(inVector, coverVector, outVector):
     try:
