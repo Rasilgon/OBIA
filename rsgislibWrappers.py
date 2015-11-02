@@ -12,6 +12,16 @@ from rsgislib.segmentation import segutils
 import os
 import subprocess
 from rsgislib.rastergis import ratutils
+import os.path
+import rsgislib
+from rsgislib import rastergis
+from rsgislib.rastergis import ratutils
+from rios import rat
+from rsgislib import imageutils
+import pandas as pd
+import numpy as np
+import multiprocessing
+import gdal
 
 def assingGKprojection (inImage):
     wktString = '''PROJCS["DHDN / Gauss-Kruger zone 4",
@@ -59,7 +69,9 @@ def ShepherdSegTest(inImage, numClusters, minPxls,tmpath, band = [1]):
     
     segutils.runShepherdSegmentation(inImage, outputClumps, outputMeanImg, 
                                      numClusters=numClusters, minPxls=minPxls,
-                                     distThres=100,  bands= band, tmpath= tmpath)   
+                                     distThres=200,  bands= band, tmpath= tmpath)  
+                                     
+    # remove small stepwise
     # export columns
     gdalFormat = 'KEA'
     dataType = rsgislib.TYPE_32INT
@@ -67,13 +79,13 @@ def ShepherdSegTest(inImage, numClusters, minPxls,tmpath, band = [1]):
     outImage=os.path.splitext(outputClumps)[0] + "export.kea"
     rastergis.exportCol2GDALImage(outputClumps, outImage, gdalFormat, dataType, field)
     # polygonize
+
+    if os.path.exists(os.path.splitext(outImage)[0] + ".shp"):
+       os.remove(os.path.splitext(outImage)[0] + ".shp")
+
     cmd = "gdal_polygonize.py " + outImage + """ -f "ESRI Shapefile" """ + os.path.splitext(outImage)[0] + ".shp"
     subprocess.call(cmd, shell = True)
     # scores
-    ratutils.populateImageStats(inImage, outputClumps, calcMean=True, calcStDev=True,
-                                calcArea=True, calcLength=True, calcWidth=True,
-                                outascii = os.path.splitext(outputClumps)[0] + "_stats.csv")
-
 
                                          
 def creating_stacks(layersList, bandNamesList, outName):
@@ -82,3 +94,23 @@ def creating_stacks(layersList, bandNamesList, outName):
     dataType = rsgislib.TYPE_32FLOAT
     imageutils.stackImageBands(layersList, bandNamesList, outName, None, 0, gdalformat, dataType)                                         
     return(outName)
+    
+
+
+#function to attribute segements with a class.
+def attribute_segments(listInputs):
+    dataStack = listInputs[0]# data with values
+    habFile = listInputs[1] # data with habitat codes
+    clumpsFile = listInputs[2] # segments
+    # Populate with stats, so it can be read for the RAT
+    rastergis.populateStats(dataStack)
+    rastergis.populateStats(clumpsFile)
+    rastergis.populateStats(habFile)
+    ratutils.populateImageStats(dataStack, clumpsFile, calcMean=True)
+    # Convert training data to RAT!!!
+    codeStats = [] #list()
+    codeStats.append(rastergis.BandAttStats(band=1, minField='Class'))
+    rastergis.populateRATWithStats(habFile, habFile, codeStats)
+    # Attribute segments with class: yes, so I can compare later !!
+    rastergis.strClassMajority(clumpsFile, habFile, 'Class', 'Class', False)
+    
